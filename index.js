@@ -11,8 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 const mongoClient = mongodb.MongoClient;
-// const dbUrl = process.env.DBURL || 'mongodb://127.0.0.1:27017';
-const dbUrl = 'mongodb://127.0.0.1:27017';
+const dbUrl = process.env.DBURL || 'mongodb://127.0.0.1:27017';
+// const dbUrl = 'mongodb://127.0.0.1:27017';
 const PORT = process.env.PORT || 5000;
 const database = 'Domaincer';
 const userCollection = 'domaincer';
