@@ -182,7 +182,7 @@ app.post('/submit/:id', [authenticate], async (req, res) => {
                         },
                         {
                             Candidate: req.body.mail,//for candidate
-                            Data: [{ ...data, newdate: req.body.date, newtime: req.body.time }]
+                            Data: [{ ...data, newdate: req.body.date, newtime: req.body.time, status : "Applied" }]
                         }
                     ]
                 )
@@ -279,6 +279,26 @@ app.post("/recruiter", [authenticate], async (req, res) => {
         }
         client.close();
     } catch (error) {
+        res.status(404).json({ message: "Internal server Error!", error });
+    }
+})
+
+app.get("/status/:id", [authenticate], async (req, res) => {
+    try {
+        let client = await mongoClient.connect(dbUrl);
+        let db = client.db(database);
+        let id = mongodb.ObjectID(req.params.id);
+        let data = await db.collection(userCollection).findOneAndUpdate({ _id: id },{$set: {status : "viwed"}});
+        if (data) {
+            res.status(200).json({ message: "Viwed data's.", data });
+            client.close();
+        }
+        else {
+            res.status(500).json({ message: "ID not found!" });
+        }
+        client.close();
+    } catch (error) {
+        console.log(error);
         res.status(404).json({ message: "Internal server Error!", error });
     }
 })
