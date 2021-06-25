@@ -173,16 +173,14 @@ app.post('/submit/:id', [authenticate], async (req, res) => {
                         },
                         {
                             Recruiter: "Applicants",//for recruiter
+                            Candidate: req.body.mail,
                             Title: data.Title,
                             Name: req.body.name,
                             Resume: req.body.resume,
                             Git: req.body.git,
                             Portifolio: req.body.portifolio,
-                            Data: [{ ...data, newdate: req.body.date, newtime: req.body.time }]
-                        },
-                        {
-                            Candidate: req.body.mail,//for candidate
-                            Data: [{ ...data, newdate: req.body.date, newtime: req.body.time, status : "Applied" }]
+                            Data: [{ ...data, newdate: req.body.date, newtime: req.body.time }],
+                            status : "Applied"
                         }
                     ]
                 )
@@ -288,7 +286,9 @@ app.get("/status/:id", [authenticate], async (req, res) => {
         let client = await mongoClient.connect(dbUrl);
         let db = client.db(database);
         let id = mongodb.ObjectID(req.params.id);
-        let data = await db.collection(userCollection).findOneAndUpdate({ _id: id },{$set: {status : "viwed"}});
+        // let all = await db.collection(userCollection).find({_id : id}).toArray();
+        // console.log(all);
+        let data = await db.collection(userCollection).findOneAndUpdate({ _id: id },{$set: {status : "viewed"}});
         if (data) {
             res.status(200).json({ message: "Viwed data's.", data });
             client.close();
