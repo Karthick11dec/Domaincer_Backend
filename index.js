@@ -63,7 +63,6 @@ app.post('/login', async (req, res) => {
             let result = await bcryptjs.compare(req.body.Password, user.Password);
             if (result) {
                 const token = await createJWT({ user });
-                // console.log(token,user.Type)
                 res.json({ message: "Login Successfully...Allow them.", token, type: user.Type });
             } else {
                 res.json({ message: 'Password invalid!' });
@@ -146,19 +145,13 @@ app.post('/submit/:id', [authenticate], async (req, res) => {
         let db = client.db(database);
         let id = mongodb.ObjectID(req.params.id);
         let data = await db.collection(userCollection).findOne({ _id: id });
-        // let data1 = {...data}
-        // console.log(data1)
-        // let assign = Object.assign([],data1)
-        // console.log(assign);
         if (data) {
             let check2 = await db.collection(userCollection).find({ submit: "submission" }).toArray();
             let verify = check2.some(check => {
                 let danger = JSON.stringify(data._id).split("");
                 let original = danger.splice(1, danger.length - 2).join("");
-                // console.log(original)
                 return ((check.mail === req.body.mail) && (original === check.id))
             })
-            // console.log(verify)
             if (!verify) {
                 let task = await db.collection(userCollection).insertMany(
                     [
@@ -180,7 +173,7 @@ app.post('/submit/:id', [authenticate], async (req, res) => {
                             Git: req.body.git,
                             Portifolio: req.body.portifolio,
                             Data: [{ ...data, newdate: req.body.date, newtime: req.body.time }],
-                            status : "Applied"
+                            status: "Applied"
                         }
                     ]
                 )
@@ -286,9 +279,7 @@ app.get("/status/:id", [authenticate], async (req, res) => {
         let client = await mongoClient.connect(dbUrl);
         let db = client.db(database);
         let id = mongodb.ObjectID(req.params.id);
-        // let all = await db.collection(userCollection).find({_id : id}).toArray();
-        // console.log(all);
-        let data = await db.collection(userCollection).findOneAndUpdate({ _id: id },{$set: {status : "viewed"}});
+        let data = await db.collection(userCollection).findOneAndUpdate({ _id: id }, { $set: { status: "viewed" } });
         if (data) {
             res.status(200).json({ message: "Viwed data's.", data });
             client.close();
